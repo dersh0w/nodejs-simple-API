@@ -1,4 +1,5 @@
 const express = require("express");
+const authRouter = require("./routers/auth.router");
 
 const app = express();
 
@@ -10,6 +11,8 @@ app.get("/api", (req, res) => {
     message: "API is working!",
   });
 });
+
+app.use("/api", authRouter);
 
 app.use("*", (req, res) => {
   res.status(404).json({
