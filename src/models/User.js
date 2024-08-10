@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const validator = require("validator").default;
 const bcrypt = require("bcrypt");
+const toolSchema = require("./Tool");
 
 // TODO: Verificação na data de nascimento
 const userSchema = new mongoose.Schema(
@@ -80,6 +81,9 @@ const userSchema = new mongoose.Schema(
         message: "Fields [password] and [passwordConfirm] must match!",
       },
       select: false,
+    },
+    userTools: {
+      type: [toolSchema],
     },
   },
   {

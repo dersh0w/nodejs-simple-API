@@ -1,3 +1,4 @@
+const { promisify } = require("util");
 require("dotenv").config();
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
@@ -56,14 +57,12 @@ const handleUserCreationError = (res, error) => {
 exports.registerUser = async (req, res, next) => {
   const userData = req.body;
 
-  let user;
   try {
-    user = await User.create(userData);
+    const user = await User.create(userData);
+    createSendToken(res, 201, user);
   } catch (error) {
     return handleUserCreationError(res, error);
   }
-
-  createSendToken(res, 201, user);
 };
 
 exports.loginUser = async (req, res, next) => {
@@ -89,4 +88,39 @@ exports.loginUser = async (req, res, next) => {
 
   user.password = undefined;
   createSendToken(res, 200, user);
+};
+
+// TODO: Handle invalid JWT
+exports.protectRoute = async (req, res, next) => {
+  let token;
+  if (
+    req.headers.authorization &&
+    req.headers.authorization.startsWith("Bearer")
+  ) {
+    token = req.headers.authorization.split(" ")[1];
+  }
+
+  if (!token) {
+    return res.status(401).json({
+      status: "fail",
+      message: "JWT Not Found",
+    });
+  }
+
+  const decodedToken = await promisify(jwt.verify)(
+    token,
+    process.env.JWT_SECRET
+  );
+
+  const user = await User.findById(decodedToken.userId);
+
+  if (!user) {
+    return res.status(401).json({
+      status: "fail",
+      message: "User not found!",
+    });
+  }
+
+  req.user = user;
+  next();
 };

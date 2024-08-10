@@ -1,5 +1,9 @@
 const express = require("express");
 const authRouter = require("./routers/auth.router");
+const { protectRoute } = require("./controllers/auth.controller");
+const toolRouter = require("./routers/tool.router");
+
+// TODO: Implementar um Error Handler
 
 const app = express();
 
@@ -13,6 +17,7 @@ app.get("/api", (req, res) => {
 });
 
 app.use("/api", authRouter);
+app.use("/api/tools", protectRoute, toolRouter);
 
 app.use("*", (req, res) => {
   res.status(404).json({
