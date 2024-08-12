@@ -2,8 +2,7 @@ const express = require("express");
 const authRouter = require("./routers/auth.router");
 const { protectRoute } = require("./controllers/auth.controller");
 const toolRouter = require("./routers/tool.router");
-
-// TODO: Implementar um Error Handler
+const globalErrorHandler = require("./controllers/error.controller");
 
 const app = express();
 
@@ -25,5 +24,7 @@ app.use("*", (req, res) => {
     message: "Page Not Found",
   });
 });
+
+app.use(globalErrorHandler);
 
 module.exports = app;

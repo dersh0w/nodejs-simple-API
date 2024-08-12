@@ -1,5 +1,7 @@
 const Tool = require("../models/Tool");
 const User = require("../models/User");
+const AppError = require("../utils/AppError");
+const catchAsync = require("../utils/catchAsync");
 
 // TODO: Refatorar código
 // TODO: Validar user input
@@ -18,19 +20,11 @@ exports.createTool = async (req, res, next) => {
   const toolData = req.body;
 
   // Coloca a nova tool no array [userTools]
-  let user;
-  try {
-    user = await User.findByIdAndUpdate(
-      userId,
-      { $push: { userTools: toolData } },
-      { returnOriginal: false }
-    );
-  } catch (error) {
-    return res.status(500).json({
-      status: "error",
-      message: "Something went wrong",
-    });
-  }
+  const user = await User.findByIdAndUpdate(
+    userId,
+    { $push: { userTools: toolData } },
+    { returnOriginal: false }
+  );
 
   // Retorna a tool criada
   const toolIndex = user.userTools.length - 1;
@@ -43,32 +37,25 @@ exports.createTool = async (req, res, next) => {
   });
 };
 
-exports.getAllTools = async (req, res, next) => {
-  // Procura o usuário pelo id salvo em [req.user]
-  const userId = req.user._id;
-  const user = await User.findById(userId);
-
-  // Retorna as tools do usuário
-  const tools = user.userTools;
+exports.getAllTools = catchAsync(async (req, res, next) => {
+  // Retorna as tools do usuário pelo user salvo em [req.user]
+  const tools = req.user.userTools;
   return res.status(200).json({
     status: "success",
     data: {
       tools,
     },
   });
-};
+});
 
-exports.getTool = async (req, res, next) => {
+exports.getTool = catchAsync(async (req, res, next) => {
   // Procura a tool pelo ID passado
   const userId = req.user._id;
   const toolId = req.params.id;
   let tool = await findTool(userId, toolId);
 
   if (!tool) {
-    return res.status(400).json({
-      status: "fail",
-      message: "Tool not found",
-    });
+    return next(new AppError("Tool Not Found", 400));
   }
 
   // Retorna a tool
@@ -78,19 +65,16 @@ exports.getTool = async (req, res, next) => {
       tool,
     },
   });
-};
+});
 
-exports.updateTool = async (req, res, next) => {
+exports.updateTool = catchAsync(async (req, res, next) => {
   // Procura a tool pelo ID passado
   const userId = req.user._id;
   const toolId = req.params.id;
   let tool = await findTool(userId, req.params.id);
 
   if (!tool) {
-    return res.status(400).json({
-      status: "fail",
-      message: "Tool not found",
-    });
+    return next(new AppError("Tool Not Found", 400));
   }
 
   // Dados a serem atualizados
@@ -101,18 +85,10 @@ exports.updateTool = async (req, res, next) => {
   };
 
   // Atualiza a tool
-  try {
-    await User.findOneAndUpdate(
-      { _id: userId, userTools: { $elemMatch: { _id: toolId } } },
-      { $set: { "userTools.$": toolUpdateData } },
-      { returnOriginal: false }
-    );
-  } catch (error) {
-    return res.status(500).json({
-      status: "error",
-      message: "Something went wrong",
-    });
-  }
+  await User.findOneAndUpdate(
+    { _id: userId, userTools: { $elemMatch: { _id: toolId } } },
+    { $set: { "userTools.$": toolUpdateData } }
+  );
 
   // Retorna a tool com os novos dados
   tool = await findTool(userId, toolId);
@@ -123,36 +99,25 @@ exports.updateTool = async (req, res, next) => {
       tool,
     },
   });
-};
+});
 
-exports.deleteTool = async (req, res, next) => {
+exports.deleteTool = catchAsync(async (req, res, next) => {
   // Procura a tool pelo ID passado
   const userId = req.user._id;
   const toolId = req.params.id;
   const tool = await findTool(userId, toolId);
 
   if (!tool) {
-    return res.status(400).json({
-      status: "fail",
-      message: "Tool not found",
-    });
+    return next(new AppError("Tool Not Found", 400));
   }
 
   // Deleta a tool
-  try {
-    await User.findByIdAndUpdate(userId, {
-      $pull: { userTools: { _id: toolId } },
-    });
-  } catch (error) {
-    console.log(error);
-    return res.status(500).json({
-      status: "error",
-      message: "Something went wrong",
-    });
-  }
+  await User.findByIdAndUpdate(userId, {
+    $pull: { userTools: { _id: toolId } },
+  });
 
   return res.status(203).json({
     status: "success",
     message: "Tool deleted successfully",
   });
-};
+});
