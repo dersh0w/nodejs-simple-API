@@ -1,11 +1,10 @@
 require("dotenv").config();
 const AppError = require("../utils/AppError");
+const logger = require("../config/logger");
 
 // Handle possíveis erros
 function handleProductionError(error) {
   let err = { ...error };
-
-  console.log(`Name: ${error.name}!`);
 
   if (error.name === "CastError") err = handleCastErrorDB(err);
   if (error.code === 11000) err = handleDuplicateFieldsDB(err.errorResponse);
@@ -49,9 +48,11 @@ function returnErrorProduction(error, res) {
     });
   }
 
+  // Salva o erro não tratado no arquivo logs/error.log
+  logger.error("Production error!");
+  logger.error(error);
+
   // Se não for operacional, printa na tela e retorna um erro genérico
-  console.log("Production error:");
-  console.log(error);
   return res.status(500).json({
     status: "error",
     message: "Something went wrong!",
@@ -60,11 +61,11 @@ function returnErrorProduction(error, res) {
 
 // Retorna erro em development
 function returnErrorDevelopment(error, res) {
-  return res.status(err.statusCode).json({
-    status: err.status,
-    error: err,
-    message: err.message,
-    stack: err.stack,
+  return res.status(error.statusCode).json({
+    status: error.status,
+    error,
+    message: error.message,
+    stack: error.stack,
   });
 }
 
