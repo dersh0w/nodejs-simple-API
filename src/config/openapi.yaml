@@ -1,0 +1,619 @@
+openapi: 3.0.0
+info:
+  title: Tools API
+  description: API for managing tools
+  version: 1.0.0
+servers:
+  - url: http://localhost:3000
+    description: Development server
+paths:
+  /api/register:
+    post:
+      summary: Register a new user
+      tags: [Authentication]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisterUser"
+      responses:
+        "201":
+          description: User created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/responses/AuthUserResponse"
+        "400":
+          description: Bad request
+        "500":
+          description: Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/responses/ServerError"
+  /api/login:
+    post:
+      summary: Login an existing user
+      tags: [Authentication]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginUser"
+      responses:
+        "200":
+          description: User login successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/responses/AuthUserResponse"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                anyOf:
+                  - $ref: "#/components/responses/EmailAndPasswordRequired"
+                  - $ref: "#/components/responses/IncorrectCredentials"
+        "500":
+          description: Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/responses/ServerError"
+  /api/tools:
+    post:
+      summary: Create a new tool
+      tags: [Tools]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateTool"
+      responses:
+        "201":
+          description: Tool created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/responses/CreateToolResponse"
+        "400":
+          description: Bad request
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/responses/InvalidToken"
+                  - $ref: "#/components/responses/TokenNotFound"
+                  - $ref: "#/components/responses/UserNotFound"
+                  - $ref: "#/components/responses/TokenExpired"
+        "500":
+          description: Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/responses/ServerError"
+    get:
+      summary: Get all tools
+      tags: [Tools]
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: A list of tools
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/responses/GetAllToolsResponse"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/responses/InvalidToken"
+                  - $ref: "#/components/responses/TokenNotFound"
+                  - $ref: "#/components/responses/UserNotFound"
+                  - $ref: "#/components/responses/TokenExpired"
+        "500":
+          description: Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/responses/ServerError"
+  /api/tools/{id}:
+    get:
+      summary: Get tool by tool ID
+      tags: [Tools]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: toolId
+          schema:
+            type: string
+          required: true
+          description: ID of the tool to get
+      responses:
+        "200":
+          description: Info about a tool
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/responses/GetToolResponse"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/responses/ToolNotFound"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/responses/InvalidToken"
+                  - $ref: "#/components/responses/TokenNotFound"
+                  - $ref: "#/components/responses/UserNotFound"
+                  - $ref: "#/components/responses/TokenExpired"
+        "500":
+          description: Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/responses/ServerError"
+    put:
+      summary: Update some data in a tool by tool ID
+      tags: [Tools]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: toolId
+          schema:
+            type: string
+          required: true
+          description: ID of the tool to update
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateTool"
+      responses:
+        "201":
+          description: Info about an updated tool
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/responses/UpdateToolResponse"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/responses/ToolNotFound"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/responses/InvalidToken"
+                  - $ref: "#/components/responses/TokenNotFound"
+                  - $ref: "#/components/responses/UserNotFound"
+                  - $ref: "#/components/responses/TokenExpired"
+        "500":
+          description: Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/responses/ServerError"
+    delete:
+      summary: Delete a tool by tool ID
+      tags: [Tools]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: toolId
+          schema:
+            type: string
+          required: true
+          description: ID of the tool to delete
+      responses:
+        "203":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/responses/DeleteToolResponse"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/responses/ToolNotFound"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/responses/InvalidToken"
+                  - $ref: "#/components/responses/TokenNotFound"
+                  - $ref: "#/components/responses/UserNotFound"
+                  - $ref: "#/components/responses/TokenExpired"
+        "500":
+          description: Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/responses/ServerError"
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    User:
+      type: object
+      properties:
+        _id:
+          type: string
+          format: objectId
+        firstName:
+          type: string
+        lastName:
+          type: string
+        description:
+          type: string
+        birthday:
+          type: string
+        state:
+          type: string
+        city:
+          type: string
+        gender:
+          type: string
+        contactNumber:
+          type: string
+        email:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+      example:
+        _id: 5da454f4307b0a8b30838839
+        firstName: John
+        lastName: Doe
+        description: Hello, world!
+        birthday: 04/05/1977
+        state: Parana
+        city: Londrina
+        gender: Male
+        contactNumber: (43) 99999-9999
+        email: johndoe@email.com
+        createdAt: 2024-08-12T00:00:00.000Z
+    RegisterUser:
+      type: object
+      required:
+        - firstName
+        - lastName
+        - email
+        - password
+        - passwordConfirm
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+        passwordConfirm:
+          type: string
+      example:
+        firstName: John
+        lastName: Doe
+        description: Hello, world!
+        birthday: 04/05/1977
+        state: Parana
+        city: Londrina
+        gender: Male
+        contactNumber: (43) 99999-9999
+        email: johndoe@email.com
+        password: password123
+        passwordConfirm: password123
+    LoginUser:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+      example:
+        email: johndoe@email.com
+        password: password123
+    Tool:
+      type: object
+      properties:
+        _id:
+          type: string
+          format: objectId
+        title:
+          type: string
+        link:
+          type: string
+        description:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      example:
+        _id: 5da454f4307b0a8b30838839
+        title: Sample Tool
+        link: https://example.com/
+        description: Sample tool pointing to the website example.com
+        tags: ["tag-01", "tag-02", "tag-03"]
+        createdAt: 2024-08-12T00:00:00.000Z
+    UpdatedTool:
+      type: object
+      properties:
+        _id:
+          type: string
+          format: objectId
+        title:
+          type: string
+        link:
+          type: string
+        description:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      example:
+        _id: 5da454f4307b0a8b30838839
+        title: Updated Tool Title
+        link: https://example.com/
+        description: Updated tool description
+        tags: ["tag-01", "tag-02", "tag-03"]
+        createdAt: 2024-08-12T00:00:00.000Z
+        updatedAt: 2024-08-13T00:00:00.000Z
+    CreateTool:
+      type: object
+      required:
+        - title
+        - link
+      properties:
+        title:
+          type: string
+        link:
+          type: string
+        description:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+      example:
+        title: Sample Tool
+        link: https://example.com
+        description: Sample tool pointing to the website example.com
+        tags: ["tag-01", "tag-02", "tag-03"]
+    UpdateTool:
+      type: object
+      properties:
+        title:
+          type: string
+        link:
+          type: string
+        description:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+      example:
+        title: Updated Tool Title
+        description: Updated tool description
+  responses:
+    ServerError:
+      type: object
+      properties:
+        status:
+          type: string
+          example: error
+        message:
+          type: string
+          example: Something went wrong!
+    EmailAndPasswordRequired:
+      type: object
+      properties:
+        status:
+          type: string
+          example: fail
+        message:
+          type: string
+          example: Email and password required!
+    IncorrectCredentials:
+      type: object
+      properties:
+        status:
+          type: string
+          example: fail
+        message:
+          type: string
+          example: Incorrect credentials!
+    TokenNotFound:
+      type: object
+      properties:
+        status:
+          type: string
+          example: fail
+        message:
+          type: string
+          example: JWT Not Found
+    UserNotFound:
+      type: object
+      properties:
+        status:
+          type: string
+          example: fail
+        message:
+          type: string
+          example: User Not Found
+    InvalidToken:
+      type: object
+      properties:
+        status:
+          type: string
+          example: fail
+        message:
+          type: string
+          example: Invalid Token!
+    TokenExpired:
+      type: object
+      properties:
+        status:
+          type: string
+          example: fail
+        message:
+          type: string
+          example: Your token has expired!
+    AuthUserResponse:
+      type: object
+      properties:
+        status:
+          type: string
+        token:
+          type: string
+        data:
+          type: object
+          properties:
+            user:
+              type: object
+              $ref: "#/components/schemas/User"
+      example:
+        status: success
+        token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+        data:
+          user:
+            _id: 5da454f4307b0a8b30838839
+            firstName: John
+            lastName: Doe
+            description: Hello, world!
+            birthday: 04/05/1977
+            state: Parana
+            city: Londrina
+            gender: Male
+            contactNumber: (43) 99999-9999
+            email: johndoe@email.com
+            createdAt: 2024-08-12T00:00:00.000Z
+    CreateToolResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: success
+        message:
+          type: string
+          example: Tool created successfully
+        data:
+          type: object
+          properties:
+            tool:
+              type: object
+              $ref: "#/components/schemas/Tool"
+    GetAllToolsResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: success
+        data:
+          type: object
+          properties:
+            tools:
+              type: array
+              items:
+                type: object
+                $ref: "#/components/schemas/Tool"
+    GetToolResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: success
+        data:
+          type: object
+          properties:
+            tool:
+              type: object
+              $ref: "#/components/schemas/Tool"
+    UpdateToolResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: success
+        message:
+          type: string
+          example: Tool updated successfully
+        data:
+          type: object
+          properties:
+            tool:
+              type: object
+              $ref: "#/components/schemas/UpdatedTool"
+    DeleteToolResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: success
+        message:
+          type: string
+          example: Tool deleted successfully
+    ToolNotFound:
+      type: object
+      properties:
+        status:
+          type: string
+          example: fail
+        message:
+          type: string
+          example: Tool Not Found

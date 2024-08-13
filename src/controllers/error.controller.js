@@ -34,7 +34,7 @@ const handleValidationError = (err) => {
   const message = `Invalid input data: ${errors.join(" ")}`;
   return new AppError(message, 400);
 };
-const handleJWTError = () => new AppError("Invalid Token!", 400);
+const handleJWTError = () => new AppError("Invalid Token!", 401);
 const handleJWTExpiredError = () =>
   new AppError("Your token has expired!", 401);
 

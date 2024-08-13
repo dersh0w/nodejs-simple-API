@@ -1,4 +1,6 @@
 const express = require("express");
+const swaggerUi = require("swagger-ui-express");
+const swaggerDoc = require("./config/swagger");
 const morganMiddleware = require("./config/morgan");
 const authRouter = require("./routers/auth.router");
 const { protectRoute } = require("./controllers/auth.controller");
@@ -20,6 +22,8 @@ app.get("/api", (req, res) => {
     message: "API is working!",
   });
 });
+
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDoc));
 
 app.use("/api", authRouter);
 app.use("/api/tools", protectRoute, toolRouter);
