@@ -1,0 +1,14 @@
+type: object
+properties:
+  status:
+    type: string
+    example: success
+  message:
+    type: string
+    example: Tool updated successfully
+  data:
+    type: object
+    properties:
+      tool:
+        type: object
+        $ref: "../../schemas/tools/UpdatedTool.yaml"

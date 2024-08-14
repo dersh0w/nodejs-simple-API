@@ -1,0 +1,30 @@
+type: object
+required:
+  - firstName
+  - lastName
+  - email
+  - password
+  - passwordConfirm
+properties:
+  firstName:
+    type: string
+  lastName:
+    type: string
+  email:
+    type: string
+  password:
+    type: string
+  passwordConfirm:
+    type: string
+example:
+  firstName: John
+  lastName: Doe
+  description: Hello, world!
+  birthday: 04/05/1977
+  state: Parana
+  city: Londrina
+  gender: Male
+  contactNumber: (43) 99999-9999
+  email: johndoe@email.com
+  password: password123
+  passwordConfirm: password123

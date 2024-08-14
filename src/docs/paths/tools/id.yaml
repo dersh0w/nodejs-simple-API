@@ -1,0 +1,135 @@
+get:
+  summary: Get tool by tool ID
+  tags: [Tools]
+  security:
+    - bearerAuth: []
+  parameters:
+    - in: path
+      name: toolId
+      schema:
+        type: string
+      required: true
+      description: ID of the tool to get
+  responses:
+    "200":
+      description: Info about a tool
+      content:
+        application/json:
+          schema:
+            type: object
+            $ref: "../../responses/tools/GetToolResponse.yaml"
+    "400":
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            type: object
+            $ref: "../../responses/errors/ToolNotFound.yaml"
+    "401":
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            oneOf:
+              - $ref: "../../responses/errors/InvalidToken.yaml"
+              - $ref: "../../responses/errors/TokenNotFound.yaml"
+              - $ref: "../../responses/errors/UserNotFound.yaml"
+              - $ref: "../../responses/errors/TokenExpired.yaml"
+    "500":
+      description: Server Error
+      content:
+        application/json:
+          schema:
+            $ref: "../../responses/errors/ServerError.yaml"
+put:
+  summary: Update some data in a tool by tool ID
+  tags: [Tools]
+  security:
+    - bearerAuth: []
+  parameters:
+    - in: path
+      name: toolId
+      schema:
+        type: string
+      required: true
+      description: ID of the tool to update
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: "../../schemas/tools/UpdateTool.yaml"
+  responses:
+    "201":
+      description: Info about an updated tool
+      content:
+        application/json:
+          schema:
+            type: object
+            $ref: "../../responses/tools/UpdateToolResponse.yaml"
+    "400":
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            type: object
+            $ref: "../../responses/errors/ToolNotFound.yaml"
+    "401":
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            oneOf:
+              - $ref: "../../responses/errors/InvalidToken.yaml"
+              - $ref: "../../responses/errors/TokenNotFound.yaml"
+              - $ref: "../../responses/errors/UserNotFound.yaml"
+              - $ref: "../../responses/errors/TokenExpired.yaml"
+    "500":
+      description: Server Error
+      content:
+        application/json:
+          schema:
+            $ref: "../../responses/errors/ServerError.yaml"
+delete:
+  summary: Delete a tool by tool ID
+  tags: [Tools]
+  security:
+    - bearerAuth: []
+  parameters:
+    - in: path
+      name: toolId
+      schema:
+        type: string
+      required: true
+      description: ID of the tool to delete
+  responses:
+    "203":
+      description: OK
+      content:
+        application/json:
+          schema:
+            type: object
+            $ref: "../../responses/tools/DeleteToolResponse.yaml"
+    "400":
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            type: object
+            $ref: "../../responses/errors/ToolNotFound.yaml"
+    "401":
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            oneOf:
+              - $ref: "../../responses/errors/InvalidToken.yaml"
+              - $ref: "../../responses/errors/TokenNotFound.yaml"
+              - $ref: "../../responses/errors/UserNotFound.yaml"
+              - $ref: "../../responses/errors/TokenExpired.yaml"
+    "500":
+      description: Server Error
+      content:
+        application/json:
+          schema:
+            $ref: "../../responses/errors/ServerError.yaml"

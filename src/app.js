@@ -1,6 +1,5 @@
 const express = require("express");
 const swaggerUi = require("swagger-ui-express");
-const swaggerDoc = require("./config/swagger");
 const morganMiddleware = require("./config/morgan");
 const authRouter = require("./routers/auth.router");
 const { protectRoute } = require("./controllers/auth.controller");
@@ -16,6 +15,11 @@ app.use(express.json());
 app.use(morganMiddleware);
 
 // Rotas
+(async () => {
+  const swaggerDoc = await require("./config/swagger");
+  app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDoc));
+})();
+
 app.get("/api", (req, res) => {
   res.status(200).json({
     status: "success",
@@ -23,17 +27,8 @@ app.get("/api", (req, res) => {
   });
 });
 
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDoc));
-
 app.use("/api", authRouter);
 app.use("/api/tools", protectRoute, toolRouter);
-
-app.use("*", (req, res) => {
-  res.status(404).json({
-    status: "fail",
-    message: "Page Not Found",
-  });
-});
 
 // Global Error Handler
 app.use(globalErrorHandler);

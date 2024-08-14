@@ -1,0 +1,38 @@
+type: object
+properties:
+  _id:
+    type: string
+    format: objectId
+  firstName:
+    type: string
+  lastName:
+    type: string
+  description:
+    type: string
+  birthday:
+    type: string
+  state:
+    type: string
+  city:
+    type: string
+  gender:
+    type: string
+  contactNumber:
+    type: string
+  email:
+    type: string
+  createdAt:
+    type: string
+    format: date-time
+example:
+  _id: 5da454f4307b0a8b30838839
+  firstName: John
+  lastName: Doe
+  description: Hello, world!
+  birthday: 04/05/1977
+  state: Parana
+  city: Londrina
+  gender: Male
+  contactNumber: (43) 99999-9999
+  email: johndoe@email.com
+  createdAt: 2024-08-12T00:00:00.000Z

@@ -1,0 +1,23 @@
+openapi: 3.0.0
+info:
+  title: Tools API
+  description: API for managing tools
+  version: 1.0.0
+servers:
+  - url: http://localhost:3000
+    description: Development server
+paths:
+  /api/register:
+    $ref: "src/docs/paths/register.yaml"
+  /api/login:
+    $ref: "src/docs/paths/login.yaml"
+  /api/tools:
+    $ref: "src/docs/paths/tools/index.yaml"
+  /api/tools/{id}:
+    $ref: "src/docs/paths/tools/id.yaml"
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

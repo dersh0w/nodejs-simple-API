@@ -1,0 +1,28 @@
+type: object
+properties:
+  _id:
+    type: string
+    format: objectId
+  title:
+    type: string
+  link:
+    type: string
+  description:
+    type: string
+  tags:
+    type: array
+    items:
+      type: string
+  createdAt:
+    type: string
+    format: date-time
+  updatedAt:
+    type: string
+    format: date-time
+example:
+  _id: 5da454f4307b0a8b30838839
+  title: Sample Tool
+  link: https://example.com/
+  description: Sample tool pointing to the website example.com
+  tags: ["tag-01", "tag-02", "tag-03"]
+  createdAt: 2024-08-12T00:00:00.000Z

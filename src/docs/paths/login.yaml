@@ -1,0 +1,30 @@
+post:
+  summary: Login an existing user
+  tags: [Authentication]
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: "../schemas/users/LoginUser.yaml"
+  responses:
+    "200":
+      description: User login successfully
+      content:
+        application/json:
+          schema:
+            $ref: "../responses/auth/AuthUserResponse.yaml"
+    "400":
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            anyOf:
+              - $ref: "../responses/errors/IncorrectCredentials.yaml"
+              - $ref: "../responses/errors/EmailAndPasswordRequired.yaml"
+    "500":
+      description: Server Error
+      content:
+        application/json:
+          schema:
+            $ref: "../responses/errors/ServerError.yaml"

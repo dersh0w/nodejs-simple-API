@@ -1,0 +1,13 @@
+type: object
+properties:
+  status:
+    type: string
+    example: success
+  data:
+    type: object
+    properties:
+      tools:
+        type: array
+        items:
+          type: object
+          $ref: "../../schemas/tools/Tool.yaml"
