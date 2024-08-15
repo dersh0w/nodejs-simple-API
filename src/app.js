@@ -1,6 +1,8 @@
 const express = require("express");
 const swaggerUi = require("swagger-ui-express");
 const mongoSanitize = require("express-mongo-sanitize");
+const { rateLimit } = require("express-rate-limit");
+const helmet = require("helmet");
 const morganMiddleware = require("./config/morgan");
 const authRouter = require("./routers/auth.router");
 const { protectRoute } = require("./controllers/auth.controller");
@@ -13,8 +15,17 @@ const app = express();
 
 // Configuração do app
 app.use(express.json());
+app.use(helmet());
 
 app.use(morganMiddleware);
+
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 150,
+  standardHeaders: true,
+});
+
+app.use(limiter);
 
 app.use(
   mongoSanitize({
