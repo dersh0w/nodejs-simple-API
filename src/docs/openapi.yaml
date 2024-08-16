@@ -13,7 +13,7 @@ paths:
     $ref: "src/docs/paths/login.yaml"
   /api/tools:
     $ref: "src/docs/paths/tools/index.yaml"
-  /api/tools/{id}:
+  /api/tools/{toolId}:
     $ref: "src/docs/paths/tools/id.yaml"
 components:
   securitySchemes:
