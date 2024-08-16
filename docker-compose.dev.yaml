@@ -1,0 +1,36 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    depends_on:
+      - mongodb
+    restart: always
+    env_file:
+      - .env
+    environment:
+      - NODE_ENV=development
+      - DB_USERNAME=$DB_USERNAME
+      - DB_PASSWORD=$DB_PASSWORD
+      - DB_HOST=mongodb
+      - DB_PORT=$DB_PORT
+      - DB_DATABASE=$DB_DATABASE
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./:/home/node/app
+      - ./node_modules:/home/node/app/node_modules
+      - ./logs:/home/node/app/logs
+    command: ./wait-for.sh mongodb:27017 -- /home/node/app/node_modules/.bin/nodemon server.js
+
+  mongodb:
+    image: "mongo:latest"
+    restart: always
+    env_file:
+      - .env
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=$DB_USERNAME
+      - MONGO_INITDB_ROOT_PASSWORD=$DB_PASSWORD
+    ports:
+      - "27017:27017"
+
