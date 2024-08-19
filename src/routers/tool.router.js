@@ -7,16 +7,20 @@ const {
   deleteTool,
 } = require("../controllers/tool.controller");
 const {
+  getAllToolsSchema,
   createToolSchema,
   updateToolSchema,
 } = require("../utils/validator/tool.validator");
-const { validateData } = require("../utils/validator/validator");
+const {
+  validateParameters,
+  validateData,
+} = require("../utils/validator/validator");
 
 const toolRouter = express.Router();
 
 toolRouter
   .route("/")
-  .get(getAllTools)
+  .get(validateParameters(getAllToolsSchema), getAllTools)
   .post(validateData(createToolSchema), createTool);
 
 toolRouter

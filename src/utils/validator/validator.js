@@ -6,7 +6,7 @@ exports.validateData = (objSchema) => {
     try {
       // Validate body
       logger.info("Validating data...");
-      const { error, value } = objSchema.validate(req.body, {
+      const { error } = objSchema.validate(req.body, {
         abortEarly: false,
       });
 
@@ -21,8 +21,44 @@ exports.validateData = (objSchema) => {
       logger.info("Data validated!");
       next();
     } catch (validationErr) {
+      logger.error("Validation error!");
       logger.error(validationErr.message);
-      return next(new AppError(validationErr.message), 400);
+      return next(new AppError("Server error during validation", 500));
+    }
+  };
+};
+
+exports.validateParameters = (objSchema) => {
+  return (req, res, next) => {
+    try {
+      // Validate parameters
+      logger.info("Validating data...");
+
+      const validateSchema = { ...req.query };
+      ["fields", "title", "tags"].forEach((key) => {
+        if (validateSchema[key]) {
+          validateSchema[key] = validateSchema[key].split(",");
+        }
+      });
+
+      const { error } = objSchema.validate(validateSchema, {
+        abortEarly: false,
+      });
+
+      // Case error was returned
+      if (error) {
+        logger.error("Invalid input data!");
+        logger.error(error.message);
+        return next(new AppError(error.message, 400));
+      }
+
+      // Else
+      logger.info("Parameters validated!");
+      next();
+    } catch (validationErr) {
+      logger.error("Validation error!");
+      logger.error(validationErr.message);
+      return next(new AppError("Server error during validation", 500));
     }
   };
 };
