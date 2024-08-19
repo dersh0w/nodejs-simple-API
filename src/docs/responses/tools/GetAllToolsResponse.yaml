@@ -6,6 +6,15 @@ properties:
   data:
     type: object
     properties:
+      page:
+        type: number
+        example: 1
+      totalItems:
+        type: number
+        example: 1
+      totalPages:
+        type: number
+        example: 1
       tools:
         type: array
         items:

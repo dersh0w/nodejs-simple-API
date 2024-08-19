@@ -77,7 +77,6 @@ exports.getAllTools = catchAsync(async (req, res, next) => {
     status: "success",
     data: {
       page,
-      itemsPerPage: limit,
       totalItems,
       totalPages,
       tools: selectedTools,

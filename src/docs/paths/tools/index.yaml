@@ -39,6 +39,41 @@ get:
   tags: [Tools]
   security:
     - bearerAuth: []
+  parameters:
+    - in: query
+      name: title
+      schema:
+        type: string
+        example: title 1,title 2,title 3
+      description: A comma-separated list of tools titles
+    - in: query
+      name: tags
+      schema:
+        type: string
+        example: tag 01,tag 02,tag 03
+      description: A comma-separated list of tools tags
+    - in: query
+      name: fields
+      schema:
+        type: string
+        example: _id,title,link
+      description: A comma-separated list of fields to be returned
+    - in: query
+      name: limit
+      schema:
+        type: integer
+        minimum: 1
+        default: 100
+        example: 50
+      description: Limit of tools per page
+    - in: query
+      name: page
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+        example: 1
+      description: Current page containing [limit] tools
   responses:
     "200":
       description: A list of tools
