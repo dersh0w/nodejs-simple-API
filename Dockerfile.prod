@@ -1,13 +1,8 @@
 FROM node:current
 
-RUN apt update && apt install -y netcat-traditional
-
 RUN mkdir -p /home/node/app/node_modules && chown -R node:node /home/node/app
 
 WORKDIR /home/node/app
-
-COPY wait-for.sh .
-RUN chmod +x ./wait-for.sh
 
 COPY package*.json .
 
