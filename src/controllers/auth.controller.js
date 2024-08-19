@@ -22,7 +22,6 @@ const createSendToken = (res, statusCode, user) => {
   });
 };
 
-// TODO: Validar user input
 exports.registerUser = catchAsync(async (req, res, next) => {
   const userData = req.body;
 
@@ -30,7 +29,6 @@ exports.registerUser = catchAsync(async (req, res, next) => {
   createSendToken(res, 201, user);
 });
 
-// TODO: Validar user input
 exports.loginUser = catchAsync(async (req, res, next) => {
   const { email, password } = req.body;
 

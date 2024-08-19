@@ -1,11 +1,7 @@
-const Tool = require("../models/Tool");
 const User = require("../models/User");
 const AppError = require("../utils/AppError");
 const catchAsync = require("../utils/catchAsync");
 
-// TODO: Refatorar código
-// TODO: Validar user input
-// TODO: Adicionar filtros na função getAllTools
 const findTool = async (userId, toolId) => {
   const tool = await User.find(
     { _id: userId },
@@ -38,12 +34,53 @@ exports.createTool = async (req, res, next) => {
 };
 
 exports.getAllTools = catchAsync(async (req, res, next) => {
-  // Retorna as tools do usuário pelo user salvo em [req.user]
-  const tools = req.user.userTools;
+  const userId = req.user._id;
+
+  // Parâmetros de paginação
+  const page = req.query.page * 1 || 1;
+  const limit = req.query.limit * 1 || 100;
+  const skip = (page - 1) * limit;
+
+  // Parâmetros de filtragem e seleção de campos
+  const { title, tags, fields } = req.query;
+  let filters = {};
+  if (title) filters.title = { $in: title.split(",") };
+  if (tags) filters.tags = { $in: tags.split(",") };
+
+  // Busca no banco de dados com filtro, seleção de campos e paginação
+  const user = await User.findById(userId);
+  const toolsQuery = user.userTools.filter((tool) => {
+    const matchesTitle = title ? filters.title.$in.includes(tool.title) : true;
+    const matchesTags = tags
+      ? tool.tags.some((tag) => filters.tags.$in.includes(tag))
+      : true;
+    return matchesTitle && matchesTags;
+  });
+
+  const totalItems = toolsQuery.length;
+  const totalPages = Math.ceil(totalItems / limit);
+
+  // Filtrando campos
+  let selectedTools = toolsQuery.slice(skip, skip + limit);
+  if (fields) {
+    const fieldsArray = fields.split(",");
+    selectedTools = selectedTools.map((tool) => {
+      let filteredTool = {};
+      fieldsArray.forEach((field) => {
+        if (tool[field]) filteredTool[field] = tool[field];
+      });
+      return filteredTool;
+    });
+  }
+
   return res.status(200).json({
     status: "success",
     data: {
-      tools,
+      page,
+      itemsPerPage: limit,
+      totalItems,
+      totalPages,
+      tools: selectedTools,
     },
   });
 });

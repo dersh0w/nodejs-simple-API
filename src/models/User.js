@@ -3,7 +3,6 @@ const validator = require("validator").default;
 const bcrypt = require("bcrypt");
 const toolSchema = require("./Tool");
 
-// TODO: Verificação na data de nascimento
 const userSchema = new mongoose.Schema(
   {
     firstName: {
